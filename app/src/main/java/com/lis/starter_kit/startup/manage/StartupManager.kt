@@ -22,7 +22,7 @@ class StartupManager(
         }
         startupSortStore = sort(startupList)
         for (startup in startupSortStore!!.result) {
-            val o = startup.create(context!!)!!
+            val o = startup.create(context!!)
             StartupCacheManager.getInstance()
                 .saveInitializedComponent(startup.javaClass, Result(o))
         }

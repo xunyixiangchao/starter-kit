@@ -12,10 +12,9 @@ import kotlin.collections.ArrayList
  */
 class Task2 : AndroidStartup<Void?>() {
     companion object {
-        lateinit var depends: ArrayList<Class<out Startup<*>?>>
+        var depends: ArrayList<Class<out Startup<*>?>> = ArrayList()
 
         init {
-            val depends = ArrayList<Class<out Startup<*>?>>()
             depends.add(Task1::class.java)
         }
     }
