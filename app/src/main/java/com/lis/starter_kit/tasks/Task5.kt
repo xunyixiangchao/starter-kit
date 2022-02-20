@@ -13,6 +13,7 @@ import kotlin.collections.ArrayList
 class Task5 : AndroidStartup<Void?>() {
     companion object {
         var depends: ArrayList<Class<out Startup<*>?>> = ArrayList<Class<out Startup<*>?>>()
+
         init {
             depends.add(Task3::class.java)
             depends.add(Task4::class.java)
@@ -22,6 +23,14 @@ class Task5 : AndroidStartup<Void?>() {
     override fun create(context: Context): Void? {
         Log.i("Task5", "create: Task5")
         return null
+    }
+
+    override fun callCreateOnMainThread(): Boolean {
+        return false
+    }
+
+    override fun waitOnMainThread(): Boolean {
+        return true
     }
 
     override fun dependencies(): List<Class<out Startup<*>?>> {

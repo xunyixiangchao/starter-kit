@@ -15,6 +15,14 @@ class Task1 : AndroidStartup<Void?>() {
         return null
     }
 
+    override fun callCreateOnMainThread(): Boolean {
+        return false
+    }
+
+    override fun waitOnMainThread(): Boolean {
+        return false
+    }
+
     override fun dependencies(): List<Class<out Startup<*>?>?>? {
         return super.dependencies()
     }

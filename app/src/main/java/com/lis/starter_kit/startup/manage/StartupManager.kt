@@ -4,7 +4,9 @@ import android.content.Context
 import android.os.Looper
 import com.lis.starter_kit.startup.AndroidStartup
 import com.lis.starter_kit.startup.Result
+import com.lis.starter_kit.startup.Startup
 import com.lis.starter_kit.startup.StartupSortStore
+import com.lis.starter_kit.startup.run.StartupRunnable
 import com.lis.starter_kit.startup.sort.TopologySort.sort
 import java.util.*
 
@@ -22,11 +24,28 @@ class StartupManager(
         }
         startupSortStore = sort(startupList)
         for (startup in startupSortStore!!.result) {
-            val o = startup.create(context!!)
-            StartupCacheManager.getInstance()
-                .saveInitializedComponent(startup.javaClass, Result(o))
+            val startupRunnable = StartupRunnable(this, startup, context!!)
+            if (startup.callCreateOnMainThread()) {
+                startupRunnable.run()
+            } else {
+                startup.executor().execute(startupRunnable)
+            }
         }
         return this
+    }
+
+    fun notifyChildren(startup: Startup<*>?) {
+        //获得已经完成的当前任务的所有子任务
+        if (startupSortStore?.startupChildrenMap?.containsKey(startup?.javaClass) == true) {
+            val childStartupCls = startupSortStore!!.startupChildrenMap[startup?.javaClass]
+            childStartupCls?.forEach { cls ->
+                run {
+                    //通知子任务 startup父任务已完成
+                    val childStartup = startupSortStore!!.startupMap.get(cls)
+                    childStartup?.toNotify()
+                }
+            }
+        }
     }
 
     class Builder {
